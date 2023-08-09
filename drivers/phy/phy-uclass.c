@@ -546,6 +546,46 @@ int generic_shutdown_phy(struct phy *phy)
 	return ret;
 }
 
+/* (Shimrra Shai) Rockchip-specific hacks that need to be
+ * kept with DRM driver
+ */
+
+int generic_phy_validate(struct phy *phy, enum phy_mode mode, int submode,
+			 union phy_configure_opts *opts)
+{
+	struct phy_ops const *ops;
+
+	if (!generic_phy_valid(phy))
+		return 0;
+	ops = phy_dev_ops(phy->dev);
+
+	return ops->validate ? ops->validate(phy, mode, submode, opts) : 0;
+}
+
+int generic_phy_set_mode_ext(struct phy *phy, enum phy_mode mode, int submode)
+{
+	struct phy_ops const *ops;
+	int ret;
+
+	if (!generic_phy_valid(phy))
+		return 0;
+	ops = phy_dev_ops(phy->dev);
+
+	if (!ops->set_mode)
+		return 0;
+
+	ret = ops->set_mode(phy, mode, submode);
+	if (!ret)
+		phy->attrs.mode = mode;
+
+	return ret;
+}
+
+int generic_phy_set_mode_small(struct phy *phy, enum phy_mode mode)
+{
+	return generic_phy_set_mode_ext(phy, mode, 0);
+}
+
 UCLASS_DRIVER(phy) = {
 	.id		= UCLASS_PHY,
 	.name		= "phy",

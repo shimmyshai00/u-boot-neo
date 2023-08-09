@@ -15,7 +15,7 @@
 		spi4 = &spi4;
 		spi5 = &sfc;
 	};
-
+	
 	dmc {
 		compatible = "rockchip,rk3588-dmc";
 		bootph-all;
@@ -99,6 +99,57 @@
 		reg = <0x0 0xfd58a000 0x0 0x2000>;
 	};
 
+	sys_grf: syscon@fd58c000 {
+		compatible = "rockchip,rk3588-sys-grf", "syscon", "simple-mfd";
+		reg = <0x0 0xfd58c000 0x0 0x1000>;
+
+		rgb: rgb {
+			compatible = "rockchip,rk3588-rgb";
+			pinctrl-names = "default";
+			pinctrl-0 = <&bt1120_pins>;
+			status = "disabled";
+
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				port@0 {
+					reg = <0>;
+					#address-cells = <1>;
+					#size-cells = <0>;
+
+					rgb_in_vp3: endpoint@2 {
+						reg = <2>;
+						remote-endpoint = <&vp3_out_rgb>;
+						status = "disabled";
+					};
+				};
+			};
+		};
+	};
+
+	vop_grf: syscon@fd5a4000 {
+		compatible = "rockchip,rk3588-vop-grf", "syscon";
+		reg = <0x0 0xfd5a4000 0x0 0x2000>;
+	};
+
+	vo0_grf: syscon@fd5a6000 {
+		compatible = "rockchip,rk3588-vo-grf", "syscon";
+		reg = <0x0 0xfd5a6000 0x0 0x2000>;
+		clocks = <&pclk_vo0_grf>;
+	};
+
+	vo1_grf: syscon@fd5a8000 {
+		compatible = "rockchip,rk3588-vo-grf", "syscon";
+		reg = <0x0 0xfd5a8000 0x0 0x100>;
+		clocks = <&pclk_vo1_grf>;
+	};
+	
+	usb_grf: syscon@fd5ac000 {
+		compatible = "rockchip,rk3588-usb-grf", "syscon";
+		reg = <0x0 0xfd5ac000 0x0 0x4000>;
+	};
+
 	pipe_phy0_grf: syscon@fd5bc000 {
 		compatible = "rockchip,pipe-phy-grf", "syscon";
 		reg = <0x0 0xfd5bc000 0x0 0x100>;
@@ -153,18 +204,7 @@
 			};
 		};
 	};
-
-	vo0_grf: syscon@fd5a6000 {
-		compatible = "rockchip,rk3588-vo-grf", "syscon";
-		reg = <0x0 0xfd5a6000 0x0 0x2000>;
-		clocks = <&cru PCLK_VO0GRF>;
-	};
-
-	usb_grf: syscon@fd5ac000 {
-		compatible = "rockchip,rk3588-usb-grf", "syscon";
-		reg = <0x0 0xfd5ac000 0x0 0x4000>;
-	};
-
+	
 	usb2phy3_grf: syscon@fd5dc000 {
 		compatible = "rockchip,rk3588-usb2phy-grf", "syscon",
 			     "simple-mfd";
@@ -193,6 +233,21 @@
 		reg = <0x0 0xfd5c8000 0x0 0x4000>;
 	};
 
+	hdptxphy0_grf: syscon@fd5e0000 {
+		compatible = "rockchip,rk3588-hdptxphy-grf", "syscon";
+		reg = <0x0 0xfd5e0000 0x0 0x100>;
+	};
+
+	mipidcphy0_grf: syscon@fd5e8000 {
+		compatible = "rockchip,mipi-dcphy-grf", "syscon";
+		reg = <0x0 0xfd5e8000 0x0 0x4000>;
+	};
+
+	mipidcphy1_grf: syscon@fd5ec000 {
+		compatible = "rockchip,mipi-dcphy-grf", "syscon";
+		reg = <0x0 0xfd5ec000 0x0 0x4000>;
+	};
+	
 	pcie2x1l2: pcie@fe190000 {
 		compatible = "rockchip,rk3588-pcie", "snps,dw-pcie";
 		#address-cells = <3>;
@@ -309,6 +364,10 @@
 		rockchip,pipe-phy-grf = <&pipe_phy0_grf>;
 		status = "disabled";
 	};
+};
+
+&display_subsystem {
+	bootph-all;
 };
 
 &emmc_bus8 {

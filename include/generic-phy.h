@@ -9,6 +9,12 @@
 
 #include <dm/ofnode.h>
 
+/* (Shimrra Shai) Rockchip extensions */
+#include <generic-phy-dp.h>
+#include <generic-phy-mipi-dphy.h>
+#include <generic-phy-pcie.h>
+/* --- */
+
 struct ofnode_phandle_args;
 
 enum phy_mode {
@@ -34,6 +40,39 @@ enum phy_mode {
 	PHY_MODE_DP
 };
 
+/* (Shimrra Shai) These are Rockchip-specific extensions that are needed
+ * for the DRM video driver as-is. We should try to get rid of them to 
+ * make the driver more self-contained.
+ */
+
+/**
+ * union phy_configure_opts - Opaque generic phy configuration
+ *
+ * @mipi_dphy: Configuration set applicable for phys supporting
+ *	       the MIPI_DPHY phy mode.
+ * @dp:	       Configuration set applicable for phys supporting
+ *	       the DisplayPort protocol.
+ */
+union phy_configure_opts {
+	struct phy_configure_opts_mipi_dphy     mipi_dphy;
+	struct phy_configure_opts_dp		dp;
+	struct phy_configure_opts_pcie		pcie;
+};
+
+/**
+ * struct phy_attrs - represents phy attributes
+ * @bus_width: Data path width implemented by PHY
+ * @max_link_rate: Maximum link rate supported by PHY (in Mbps)
+ * @mode: PHY mode
+ */
+struct phy_attrs {
+	u32			bus_width;
+	u32			max_link_rate;
+	enum phy_mode		mode;
+};
+
+/* --- end RK-specific stuff --- */
+
 /**
  * struct phy - A handle to (allowing control of) a single phy port.
  *
@@ -49,6 +88,7 @@ enum phy_mode {
 struct phy {
 	struct udevice *dev;
 	unsigned long id;
+	struct phy_attrs attrs; /* (SS) Rockchip extension */
 };
 
 /*
@@ -160,6 +200,27 @@ struct phy_ops {
 	 */
 	int	(*configure)(struct phy *phy, void *params);
 
+	/* (SS) Rockchip-specific */
+	/**
+	 * @validate:
+	 *
+	 * Optional.
+	 *
+	 * Used to check that the current set of parameters can be
+	 * handled by the phy. Implementations are free to tune the
+	 * parameters passed as arguments if needed by some
+	 * implementation detail or constraints. It must not change
+	 * any actual configuration of the PHY, so calling it as many
+	 * times as deemed fit by the consumer must have no side
+	 * effect.
+	 *
+	 * Returns: 0 if the configuration can be applied, an negative
+	 * error code otherwise
+	 */
+	int	(*validate)(struct phy *phy, enum phy_mode mode, int submode,
+			    union phy_configure_opts *opts);
+	/* --- end RK stuff --- */
+	
 	/**
 	 * set_mode - set PHY device mode
 	 *
@@ -264,6 +325,10 @@ int generic_phy_configure(struct phy *phy, void *params);
  * Return: 0 if OK, or a negative error code
  */
 int generic_phy_set_mode(struct phy *phy, enum phy_mode mode, int submode);
+
+/* (SS: RK hacks) */
+int generic_phy_set_mode_ext(struct phy *phy, enum phy_mode mode, int submode);
+int generic_phy_set_mode_small(struct phy *phy, enum phy_mode mode);
 
 /**
  * generic_phy_set_speed() - set PHY device speed
@@ -515,6 +580,17 @@ static inline int generic_setup_phy(struct udevice *dev, struct phy *phy, int in
 }
 
 static inline int generic_shutdown_phy(struct phy *phy)
+{
+	return 0;
+}
+
+/* (SS) Rockchip HACK - don't want this here! */
+static inline int generic_phy_set_mode_ext(struct phy *phy, enum phy_mode mode, int submode)
+{
+	return 0;
+}
+
+static inline int generic_phy_set_mode_small(struct phy *phy, enum phy_mode mode)
 {
 	return 0;
 }

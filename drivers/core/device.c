@@ -479,6 +479,8 @@ static int device_get_dma_constraints(struct udevice *dev)
 
 int device_probe(struct udevice *dev)
 {
+	printf("(SS) device_probe: called for %s\n", dev->name);
+	
 	const struct driver *drv;
 	int ret;
 

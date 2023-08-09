@@ -7,6 +7,19 @@
 #include "rk3588s-u-boot.dtsi"
 
 / {
+	aliases {
+		dp0 = &dp0;
+		dp1 = &dp1;
+		edp0 = &edp0;
+		edp1 = &edp1;
+		hdptx0 = &hdptxphy0;
+		hdptx1 = &hdptxphy1;
+		hdptxhdmi0 = &hdptxphy_hdmi0;
+		hdptxhdmi1 = &hdptxphy_hdmi1;
+		hdmi0 = &hdmi0;
+		hdmi1 = &hdmi1;
+	};
+	
 	usbdrd3_1: usbdrd3_1 {
 		compatible = "rockchip,rk3588-dwc3", "rockchip,rk3399-dwc3";
 		clocks = <&cru REF_CLK_USB3OTG1>, <&cru SUSPEND_CLK_USB3OTG1>,
@@ -67,6 +80,11 @@
 		};
 	};
 
+	hdptxphy1_grf: syscon@fd5e4000 {
+		compatible = "rockchip,rk3588-hdptxphy-grf", "syscon";
+		reg = <0x0 0xfd5e4000 0x0 0x100>;
+	};
+	
 	usbdp_phy1: phy@fed90000 {
 		compatible = "rockchip,rk3588-usbdp-phy";
 		reg = <0x0 0xfed90000 0x0 0x10000>;

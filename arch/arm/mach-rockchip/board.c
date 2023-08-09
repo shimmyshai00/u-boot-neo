@@ -348,3 +348,33 @@ __weak int misc_init_r(void)
 	return ret;
 }
 #endif
+
+int rockchip_get_bootdev_desc(struct blk_desc **desc)
+{
+	int ret;
+	struct mmc *mmc;
+	struct udevice *dev;
+
+	/*
+	 * For now the firmware images are assumed to
+	 * be on the SD card
+	 */
+        /* (SS) NB: had to change to 0 for firefly specific; this must be generalized! */
+	ret = uclass_get_device(UCLASS_MMC, 0, &dev);
+	if (ret)
+		return -1;
+
+	mmc = mmc_get_mmc_dev(dev);
+	if (!mmc)
+		return -ENODEV;
+
+	if ((ret = mmc_init(mmc)))
+		return ret;
+
+	*desc = mmc_get_blk_desc(mmc);
+	if (!*desc)
+		return -1;
+
+	return 0;
+}
+

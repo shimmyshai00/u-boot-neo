@@ -20,6 +20,17 @@ int backlight_enable(struct udevice *dev)
 	return ops->enable(dev);
 }
 
+/* SS: a Rockchip addition */
+int backlight_disable(struct udevice *dev)
+{
+	const struct backlight_ops *ops = backlight_get_ops(dev);
+
+	if (!ops->disable)
+		return -ENOSYS;
+
+	return ops->disable(dev);
+}
+
 int backlight_set_brightness(struct udevice *dev, int percent)
 {
 	const struct backlight_ops *ops = backlight_get_ops(dev);

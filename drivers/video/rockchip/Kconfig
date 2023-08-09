@@ -77,4 +77,6 @@ config DISPLAY_ROCKCHIP_DW_MIPI
 	  Select the Designware MIPI DSI controller in use on some Rockchip
 	  SOCs.
 
+source drivers/video/rockchip/drm/Kconfig
+
 endif

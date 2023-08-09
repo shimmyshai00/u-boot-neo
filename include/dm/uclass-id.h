@@ -142,6 +142,7 @@ enum uclass_id {
 	UCLASS_VIDEO_BRIDGE,	/* Video bridge, e.g. DisplayPort to LVDS */
 	UCLASS_VIDEO_CONSOLE,	/* Text console driver for video device */
 	UCLASS_VIDEO_OSD,	/* On-screen display */
+	UCLASS_VIDEO_CRTC,      /* Display Controller (SS: GAAH, rockchip thingy leaked!) */
 	UCLASS_VIRTIO,		/* VirtIO transport device */
 	UCLASS_W1,		/* Dallas 1-Wire bus */
 	UCLASS_W1_EEPROM,	/* one-wire EEPROMs */

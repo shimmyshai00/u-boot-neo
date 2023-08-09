@@ -16,4 +16,5 @@ obj-mipi-$(CONFIG_ROCKCHIP_RK3288) += rk3288_mipi.o
 obj-mipi-$(CONFIG_ROCKCHIP_RK3399) += rk3399_mipi.o
 obj-$(CONFIG_DISPLAY_ROCKCHIP_MIPI) += rk_mipi.o $(obj-mipi-y)
 obj-$(CONFIG_DISPLAY_ROCKCHIP_DW_MIPI) += dw_mipi_dsi_rockchip.o
+obj-$(CONFIG_DRM_ROCKCHIP) += drm/
 endif

@@ -241,6 +241,7 @@ enum edid_cea861_db_types {
 	EDID_CEA861_DB_VIDEO = 0x02,
 	EDID_CEA861_DB_VENDOR = 0x03,
 	EDID_CEA861_DB_SPEAKER = 0x04,
+	EDID_CEA861_DB_USE_EXTENDED = 0x07, /* SS/Rockchip */
 };
 
 struct edid_cea861_info {
